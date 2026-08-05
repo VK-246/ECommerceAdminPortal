@@ -3,6 +3,7 @@ using ECommerce.Api.Middleware;
 using ECommerce.Application.Interfaces;
 using ECommerce.Application.Services;
 using ECommerce.Infrastructure.Data;
+using ECommerce.Infrastructure.Repositories;
 using ECommerce.Infrastructure.Services.Auth;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
@@ -31,9 +32,17 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 // This lets the Application layer resolve IAppDbContext without referencing Infrastructure.
 builder.Services.AddScoped<IAppDbContext>(provider => provider.GetRequiredService<AppDbContext>());
 
+// Repositories
+builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
+builder.Services.AddScoped<IProductRepository, ProductRepository>();
+
 // --- Application Services ---
 // Register the Auth service. Controllers ask for IAuthService; DI injects AuthService.
 builder.Services.AddScoped<IAuthService, AuthService>();
+
+// Core Domain Services
+builder.Services.AddScoped<ICategoryService, CategoryService>();
+builder.Services.AddScoped<IProductService, ProductService>();
 
 // --- Infrastructure Services ---
 // Register token generation. AuthService asks for ITokenService; DI injects TokenService.
@@ -48,26 +57,26 @@ builder.Services.AddControllers();
 // --- JWT Bearer Authentication ---
 // Tell ASP.NET Core how to validate incoming JWT tokens on every protected request.
 var jwtSettings = builder.Configuration.GetSection("JwtSettings");
-var secretKey   = jwtSettings["SecretKey"]!;
+var secretKey = jwtSettings["SecretKey"]!;
 
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-    options.DefaultChallengeScheme    = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
 })
 .AddJwtBearer(options =>
 {
     options.TokenValidationParameters = new TokenValidationParameters
     {
-        ValidateIssuer           = true,
-        ValidateAudience         = true,
-        ValidateLifetime         = true,           // Reject expired tokens
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = true,           // Reject expired tokens
         ValidateIssuerSigningKey = true,
-        ValidIssuer              = jwtSettings["Issuer"],
-        ValidAudience            = jwtSettings["Audience"],
-        IssuerSigningKey         = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey)),
-        NameClaimType            = "nameid",
-        RoleClaimType            = "role"
+        ValidIssuer = jwtSettings["Issuer"],
+        ValidAudience = jwtSettings["Audience"],
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey)),
+        NameClaimType = "nameid",
+        RoleClaimType = "role"
     };
 });
 
@@ -86,12 +95,12 @@ builder.Services.AddSwaggerGen(c =>
     // Enter your JWT token here to authenticate all requests in Swagger.
     c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
-        Name         = "Authorization",
-        Type         = SecuritySchemeType.Http,
-        Scheme       = "bearer",
+        Name = "Authorization",
+        Type = SecuritySchemeType.Http,
+        Scheme = "bearer",
         BearerFormat = "JWT",
-        In           = ParameterLocation.Header,
-        Description  = "Paste your JWT token here. Swagger will automatically prepend 'Bearer '."
+        In = ParameterLocation.Header,
+        Description = "Paste your JWT token here. Swagger will automatically prepend 'Bearer '."
     });
 });
 
