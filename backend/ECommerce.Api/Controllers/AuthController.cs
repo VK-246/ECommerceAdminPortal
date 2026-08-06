@@ -50,6 +50,29 @@ public class AuthController : ControllerBase
         // GlobalExceptionMiddleware catches it and returns 401.
         var result = await _authService.LoginAsync(dto);
 
+        // --- NEW: Set HttpOnly Cookie ---
+        var cookieOptions = new CookieOptions
+        {
+            HttpOnly = true,
+            Secure = true, // Must be true in production, okay for localhost in modern browsers
+            SameSite = SameSiteMode.Strict,
+            Expires = result.ExpiresAt
+        };
+        Response.Cookies.Append("ecommerce_token", result.Token, cookieOptions);
+
         return Ok(ApiResponse<AuthResponseDto>.Ok(result, "Login successful."));
+    }
+
+    /// <summary>Logout and clear the JWT cookie.</summary>
+    [HttpPost("logout")]
+    public IActionResult Logout()
+    {
+        Response.Cookies.Delete("ecommerce_token", new CookieOptions
+        {
+            HttpOnly = true,
+            Secure = true,
+            SameSite = SameSiteMode.Strict
+        });
+        return Ok(ApiResponse<string>.Ok(null, "Logout successful."));
     }
 }

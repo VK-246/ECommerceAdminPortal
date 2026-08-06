@@ -1,0 +1,63 @@
+<mat-sidenav-container class="sidenav-container">
+
+  <!-- Sidebar -->
+  <mat-sidenav mode="side" opened class="sidenav">
+
+    <!-- App Brand at top of sidebar -->
+    <div class="sidebar-brand">
+      <mat-icon class="sidebar-brand-icon">storefront</mat-icon>
+      <span class="sidebar-brand-text">ECommerce<br><small>Admin Portal</small></span>
+    </div>
+
+    <mat-divider></mat-divider>
+
+    <!-- Navigation Links -->
+    <mat-nav-list>
+      <a mat-list-item
+         *ngFor="let link of navLinks"
+         [routerLink]="link.route"
+         routerLinkActive="active-link"
+         [routerLinkActiveOptions]="{ exact: link.route === '/dashboard' }"
+         class="nav-item">
+        <mat-icon matListItemIcon>{{ link.icon }}</mat-icon>
+        <span matListItemTitle>{{ link.label }}</span>
+      </a>
+    </mat-nav-list>
+
+  </mat-sidenav>
+
+  <!-- Main Content Area -->
+  <mat-sidenav-content class="main-content">
+
+    <!-- Top Navbar -->
+    <mat-toolbar color="primary" class="top-toolbar">
+      <span class="toolbar-title">ECommerce Admin</span>
+      
+      <button mat-button (click)="testApiCall()" style="margin-left: 20px; border: 1px solid white;">
+        <mat-icon>api</mat-icon> Test API (Verify Step 7)
+      </button>
+
+      <span class="toolbar-spacer"></span>
+
+      <!-- User info + logout -->
+      <span class="user-email">{{ userEmail }}</span>
+      <span class="user-role-badge">{{ userRole }}</span>
+      <button mat-icon-button [matMenuTriggerFor]="userMenu" matTooltip="Account options" id="user-menu-btn">
+        <mat-icon>account_circle</mat-icon>
+      </button>
+      <mat-menu #userMenu="matMenu">
+        <button mat-menu-item (click)="logout()" id="logout-btn">
+          <mat-icon>logout</mat-icon>
+          <span>Logout</span>
+        </button>
+      </mat-menu>
+    </mat-toolbar>
+
+    <!-- Page Content — Epic 5 screens will render here -->
+    <div class="content-wrapper">
+      <router-outlet></router-outlet>
+    </div>
+
+  </mat-sidenav-content>
+
+</mat-sidenav-container>

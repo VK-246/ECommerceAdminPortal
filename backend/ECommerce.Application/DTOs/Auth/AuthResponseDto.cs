@@ -1,3 +1,5 @@
+using System.Text.Json.Serialization;
+
 namespace ECommerce.Application.DTOs.Auth;
 
 /// <summary>
@@ -7,6 +9,7 @@ namespace ECommerce.Application.DTOs.Auth;
 /// </summary>
 public class AuthResponseDto
 {
+    [JsonIgnore]
     public string Token { get; set; } = string.Empty;
     public string Email { get; set; } = string.Empty;
     public string Role { get; set; } = string.Empty;

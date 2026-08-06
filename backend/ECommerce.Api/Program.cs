@@ -51,6 +51,18 @@ builder.Services.AddScoped<ITokenService, TokenService>();
 // Register password hashing. BCrypt stays in Infrastructure — Application only sees the interface.
 builder.Services.AddScoped<IPasswordHasher, BcryptPasswordHasher>();
 
+// --- CORS ---
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AngularApp", policy =>
+    {
+        policy.WithOrigins("http://localhost:4200") // Explicitly allow Angular dev server
+              .AllowAnyHeader()
+              .AllowAnyMethod()
+              .AllowCredentials(); // Required for cookies to be sent cross-origin
+    });
+});
+
 // --- Controllers ---
 builder.Services.AddControllers();
 
@@ -77,6 +89,19 @@ builder.Services.AddAuthentication(options =>
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey)),
         NameClaimType = "nameid",
         RoleClaimType = "role"
+    };
+
+    // Tell the JWT middleware to look for the token in the cookie if it's not in the Auth header
+    options.Events = new JwtBearerEvents
+    {
+        OnMessageReceived = context =>
+        {
+            if (context.Request.Cookies.ContainsKey("ecommerce_token"))
+            {
+                context.Token = context.Request.Cookies["ecommerce_token"];
+            }
+            return Task.CompletedTask;
+        }
     };
 });
 
@@ -130,6 +155,9 @@ if (app.Environment.IsDevelopment())
 
 // 2. Redirect HTTP → HTTPS
 app.UseHttpsRedirection();
+
+// Apply CORS policy before Auth
+app.UseCors("AngularApp");
 
 // 3. Authentication — validates the JWT token on each request
 app.UseAuthentication();
