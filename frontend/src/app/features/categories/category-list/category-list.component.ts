@@ -6,6 +6,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { CategoryService } from '../../../core/services/category.service';
 import { Category } from '../../../core/models/category.model';
 import { CategoryFormComponent } from '../category-form/category-form.component';
+import { ConfirmDialogComponent } from '../../../shared/components/confirm-dialog/confirm-dialog.component';
 
 @Component({
   selector: 'app-category-list',
@@ -59,17 +60,29 @@ export class CategoryListComponent implements OnInit {
   }
 
   deleteCategory(category: Category): void {
-    if (confirm(`Are you sure you want to delete ${category.name}?`)) {
-      this.categoryService.delete(category.id).subscribe({
-        next: () => {
-          this.snackBar.open('Category deleted', 'Close', { duration: 3000 });
-          this.loadCategories();
-        },
-        error: (err) => {
-          const msg = err.error?.message || 'Failed to delete category';
-          this.snackBar.open(msg, 'Close', { duration: 3000 });
-        }
-      });
-    }
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      width: '400px',
+      data: {
+        title: 'Delete Category',
+        message: `Are you sure you want to permanently delete the "${category.name}" category? This action cannot be undone.`,
+        confirmText: 'Delete',
+        isDestructive: true
+      }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result === true) {
+        this.categoryService.delete(category.id).subscribe({
+          next: () => {
+            this.snackBar.open('Category deleted', 'Close', { duration: 3000 });
+            this.loadCategories();
+          },
+          error: (err) => {
+            const msg = err.error?.message || 'Failed to delete category';
+            this.snackBar.open(msg, 'Close', { duration: 3000, panelClass: ['error-snackbar'] });
+          }
+        });
+      }
+    });
   }
 }

@@ -9,24 +9,16 @@
       <mat-error *ngIf="productForm.get('name')?.hasError('required')">Name is required.</mat-error>
     </mat-form-field>
 
-    <div class="row">
-      <mat-form-field appearance="outline" class="half-width">
-        <mat-label>SKU</mat-label>
-        <input matInput formControlName="sku" placeholder="e.g., MOUSE-001">
-        <mat-error *ngIf="productForm.get('sku')?.hasError('required')">SKU is required.</mat-error>
-      </mat-form-field>
-
-      <mat-form-field appearance="outline" class="half-width">
-        <mat-label>Category</mat-label>
-        <mat-select formControlName="categoryId" placeholder="Select Category">
-          <mat-option *ngIf="isLoadingCategories">Loading...</mat-option>
-          <mat-option *ngFor="let cat of categories" [value]="cat.id">
-            {{ cat.name }}
-          </mat-option>
-        </mat-select>
-        <mat-error *ngIf="productForm.get('categoryId')?.hasError('required')">Category is required.</mat-error>
-      </mat-form-field>
-    </div>
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Category</mat-label>
+      <mat-select formControlName="categoryId" placeholder="Select Category">
+        <mat-option *ngIf="isLoadingCategories">Loading...</mat-option>
+        <mat-option *ngFor="let cat of categories" [value]="cat.id">
+          {{ cat.name }}
+        </mat-option>
+      </mat-select>
+      <mat-error *ngIf="productForm.get('categoryId')?.hasError('required')">Category is required.</mat-error>
+    </mat-form-field>
 
     <div class="row">
       <mat-form-field appearance="outline" class="half-width">
@@ -42,6 +34,19 @@
         <mat-error *ngIf="productForm.get('stockQuantity')?.hasError('required')">Stock is required.</mat-error>
         <mat-error *ngIf="productForm.get('stockQuantity')?.hasError('min')">Stock must be 0 or greater.</mat-error>
       </mat-form-field>
+    </div>
+
+    <div class="ai-description-container">
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Product Description</mat-label>
+        <textarea matInput formControlName="description" rows="4" placeholder="Enter description or let AI generate it"></textarea>
+      </mat-form-field>
+      
+      <button mat-stroked-button color="accent" type="button" class="ai-btn" 
+              (click)="generateAiDescription()" [disabled]="isGeneratingAi">
+        <mat-icon>auto_awesome</mat-icon>
+        {{ isGeneratingAi ? 'Generating...' : 'Generate AI Description' }}
+      </button>
     </div>
 
   </form>

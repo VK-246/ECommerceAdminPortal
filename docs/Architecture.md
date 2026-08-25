@@ -17,6 +17,9 @@ Refer C:\Users\vinay\Desktop\WORK\Projects\ECommerceAdminPortal\docs\BackendArch
 - **Infrastructure:** Implements the interfaces (Database access, API calls).
 - **Api:** The entry point. Handles HTTP requests, routes them to Application services, and returns standardized HTTP responses.
 
+
+
+#The below section is just for the SDE reference not for antigravity instructions.
 ## 3. Architectural Decision Record (ADR) - For Interviews
 
 When asked "Why did you choose X?", use these documented decisions:

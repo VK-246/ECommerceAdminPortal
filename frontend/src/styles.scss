@@ -1,15 +1,89 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Custom Theme Variables */
+:root {
+  --font-geist: "Geist", "Geist Sans", sans-serif;
+}
+
 /* Global styles — applied across the entire app */
 html, body {
   height: 100%;
   margin: 0;
-  font-family: Roboto, "Helvetica Neue", sans-serif;
-  background-color: #f5f5f5;
+  font-family: var(--font-geist);
+  @apply bg-slate-950 text-slate-200 antialiased;
+}
+
+/* Angular Material Overrides for Dark-Glass Theme */
+.mat-mdc-table {
+  background: transparent !important;
+}
+
+.mat-mdc-header-cell {
+  @apply text-slate-300 font-bold border-b border-white/10 bg-white/5 !important;
+  font-size: 14px !important;
+  letter-spacing: 0.5px !important;
+  padding: 20px 24px !important;
+}
+
+.mat-mdc-cell {
+  @apply text-slate-200 border-b border-white/5 !important;
+  font-size: 15px !important;
+  padding: 16px 24px !important;
+}
+
+.mat-mdc-row:hover .mat-mdc-cell {
+  @apply bg-white/10 transition-colors !important;
+}
+
+/* Fix Paginator */
+.mat-mdc-paginator, .mat-mdc-paginator-container {
+  background: transparent !important;
+  color: #cbd5e1 !important; /* slate-300 */
+}
+.mat-mdc-paginator-icon {
+  fill: #cbd5e1 !important;
+}
+.mat-mdc-select-value-text, .mat-mdc-select-arrow {
+  color: #cbd5e1 !important;
+}
+
+/* Material Dialog Overrides */
+.mat-mdc-dialog-container {
+  .mat-mdc-dialog-surface {
+    @apply bg-slate-900/90 backdrop-blur-2xl border border-white/10 rounded-3xl text-slate-200 shadow-[0_0_50px_-12px_rgba(0,0,0,0.8)] !important;
+  }
+  h2, h3, h4, .mat-mdc-dialog-title {
+    @apply text-white font-bold tracking-tight border-b border-white/10 pb-4 mb-4 !important;
+  }
+  .mat-mdc-dialog-content {
+    @apply text-slate-300;
+  }
+}
+
+/* Material Form Field Overrides inside dark areas */
+.mat-mdc-form-field {
+  .mdc-text-field--outlined {
+    @apply bg-white/5 border border-white/10 rounded-xl transition-all !important;
+  }
+  .mdc-notched-outline__leading, .mdc-notched-outline__notch, .mdc-notched-outline__trailing {
+    border: none !important;
+  }
+  .mdc-text-field__input {
+    @apply text-slate-200 !important;
+  }
+  .mdc-floating-label {
+    @apply text-slate-400 !important;
+  }
+  &.mat-focused .mdc-text-field--outlined {
+    @apply bg-white/10 ring-2 ring-indigo-500/50 !important;
+  }
 }
 
 /* Custom snackbar for error messages */
 .error-snackbar {
-  background: #c62828;
-  color: white;
+  @apply bg-red-900 text-white rounded-md shadow-lg border border-red-500/30;
 
   .mat-simple-snack-bar-content {
     color: white;

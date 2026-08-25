@@ -29,6 +29,10 @@ const routes: Routes = [
       { 
         path: 'products', 
         loadChildren: () => import('./features/products/products.module').then(m => m.ProductsModule) 
+      },
+      { 
+        path: 'ai-chat', 
+        loadChildren: () => import('./features/ai-chat/ai-chat.module').then(m => m.AiChatModule) 
       }
     ]
   },

@@ -12,9 +12,9 @@ export interface Product {
   categoryId: number;
   categoryName?: string; // Flattened property from backend DTO
   name: string;
-  sku: string;
   price: number;
   stockQuantity: number;
+  description?: string;
   createdAt?: string;
   updatedAt?: string;
 }
@@ -22,15 +22,15 @@ export interface Product {
 export interface CreateProductRequest {
   categoryId: number;
   name: string;
-  sku: string;
   price: number;
   stockQuantity: number;
+  description?: string;
 }
 
 export interface UpdateProductRequest {
   categoryId: number;
   name: string;
-  sku: string;
   price: number;
   stockQuantity: number;
+  description?: string;
 }

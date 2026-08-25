@@ -27,3 +27,6 @@ docs/
 .idea/
 .DS_Store
 Thumbs.db
+
+# --- Dev & Custom Folders ---
+Dev/

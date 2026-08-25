@@ -22,6 +22,7 @@ import { MatMenuModule }         from '@angular/material/menu';
 import { MatChipsModule }        from '@angular/material/chips';
 import { MatTooltipModule }      from '@angular/material/tooltip';
 import { MatDividerModule }      from '@angular/material/divider';
+import { ConfirmDialogComponent } from './components/confirm-dialog/confirm-dialog.component';
 
 const MATERIAL_MODULES = [
   MatButtonModule,
@@ -62,6 +63,9 @@ const MATERIAL_MODULES = [
     CommonModule,
     ReactiveFormsModule,
     ...MATERIAL_MODULES
+  ],
+  declarations: [
+    ConfirmDialogComponent
   ]
 })
 export class SharedModule {}

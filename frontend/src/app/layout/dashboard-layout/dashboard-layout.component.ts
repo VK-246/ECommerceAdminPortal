@@ -18,7 +18,8 @@ export class DashboardLayoutComponent implements OnInit {
   navLinks = [
     { label: 'Dashboard',   icon: 'dashboard',   route: '/dashboard' },
     { label: 'Categories',  icon: 'category',    route: '/dashboard/categories' },
-    { label: 'Products',    icon: 'inventory_2', route: '/dashboard/products' }
+    { label: 'Products',    icon: 'inventory_2', route: '/dashboard/products' },
+    { label: 'AI Assistant', icon: 'smart_toy',  route: '/dashboard/ai-chat' }
   ];
 
   constructor(private authService: AuthService, private router: Router, private http: HttpClient) {}

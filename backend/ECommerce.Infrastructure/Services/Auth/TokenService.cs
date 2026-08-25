@@ -29,7 +29,7 @@ public class TokenService : ITokenService
         var secretKey   = jwtSettings["SecretKey"]!;
         var issuer      = jwtSettings["Issuer"]!;
         var audience    = jwtSettings["Audience"]!;
-        var expiryMins  = int.Parse(jwtSettings["ExpiryInMinutes"]!);
+        var expiryMins  = int.Parse(jwtSettings["ExpiryMinutes"]!);
 
         // 2. Create the signing key from our secret
         var key   = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey));

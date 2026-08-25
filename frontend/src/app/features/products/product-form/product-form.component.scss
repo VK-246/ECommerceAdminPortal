@@ -17,3 +17,16 @@
 mat-dialog-content {
   padding-top: 16px !important;
 }
+
+.ai-description-container {
+  position: relative;
+  width: 100%;
+}
+
+.ai-btn {
+  position: absolute;
+  bottom: 24px;
+  right: 12px;
+  background-color: white;
+  border-radius: 20px;
+}

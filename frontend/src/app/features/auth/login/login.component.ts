@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ElementRef, NgZone, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -10,24 +10,42 @@ import { AuthService } from '../../../core/services/auth.service';
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.scss']
 })
-export class LoginComponent {
+export class LoginComponent implements OnInit, OnDestroy {
 
   loginForm: FormGroup;
   isLoading = false;
   hidePassword = true;
+  private mouseMoveListener?: (event: MouseEvent) => void;
 
   constructor(
     private fb: FormBuilder,
     private authService: AuthService,
     private router: Router,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private el: ElementRef,
+    private ngZone: NgZone
   ) {
-    // Define the form structure with validation rules upfront in TypeScript.
-    // This is the "Reactive Forms" approach — the form lives in the component, not the HTML.
     this.loginForm = this.fb.group({
       email:    ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(6)]]
     });
+  }
+
+  ngOnInit() {
+    // Run outside Angular to prevent change detection on every mouse move (keeps Lighthouse score high)
+    this.ngZone.runOutsideAngular(() => {
+      this.mouseMoveListener = (e: MouseEvent) => {
+        this.el.nativeElement.style.setProperty('--mouse-x', `${e.clientX}px`);
+        this.el.nativeElement.style.setProperty('--mouse-y', `${e.clientY}px`);
+      };
+      window.addEventListener('mousemove', this.mouseMoveListener);
+    });
+  }
+
+  ngOnDestroy() {
+    if (this.mouseMoveListener) {
+      window.removeEventListener('mousemove', this.mouseMoveListener);
+    }
   }
 
   // Convenience getters — lets the HTML template access controls as `email` instead of `loginForm.get('email')`

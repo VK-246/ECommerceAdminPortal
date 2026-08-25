@@ -5,6 +5,7 @@ using ECommerce.Application.Services;
 using ECommerce.Infrastructure.Data;
 using ECommerce.Infrastructure.Repositories;
 using ECommerce.Infrastructure.Services.Auth;
+using ECommerce.Infrastructure.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -50,6 +51,9 @@ builder.Services.AddScoped<ITokenService, TokenService>();
 
 // Register password hashing. BCrypt stays in Infrastructure — Application only sees the interface.
 builder.Services.AddScoped<IPasswordHasher, BcryptPasswordHasher>();
+
+// Register AI Service with HttpClient
+builder.Services.AddHttpClient<IAiService, GeminiAiService>();
 
 // --- CORS ---
 builder.Services.AddCors(options =>

@@ -1,63 +1,75 @@
-<mat-sidenav-container class="sidenav-container">
+<div class="h-screen w-full flex bg-slate-950 overflow-hidden text-slate-200">
+  
+  <!-- Subtle ambient background glow elements for the entire dashboard -->
+  <div class="absolute top-0 right-0 w-[500px] h-[500px] bg-indigo-600/10 rounded-full blur-[120px] pointer-events-none"></div>
+  <div class="absolute bottom-0 left-0 w-[400px] h-[400px] bg-emerald-600/10 rounded-full blur-[120px] pointer-events-none"></div>
 
   <!-- Sidebar -->
-  <mat-sidenav mode="side" opened class="sidenav">
-
-    <!-- App Brand at top of sidebar -->
-    <div class="sidebar-brand">
-      <mat-icon class="sidebar-brand-icon">storefront</mat-icon>
-      <span class="sidebar-brand-text">ECommerce<br><small>Admin Portal</small></span>
+  <aside class="w-64 flex-shrink-0 relative z-20 bg-slate-900/60 backdrop-blur-2xl border-r border-white/10 flex flex-col shadow-[10px_0_30px_rgba(0,0,0,0.5)]">
+    <!-- App Brand -->
+    <div class="flex items-center gap-3 p-6 border-b border-white/10">
+      <div class="flex items-center justify-center w-10 h-10 rounded-xl bg-indigo-500/20 border border-indigo-500/30 shadow-[0_0_15px_rgba(99,102,241,0.2)]">
+        <mat-icon class="text-indigo-400">storefront</mat-icon>
+      </div>
+      <div>
+        <h2 class="text-lg font-bold text-white leading-tight tracking-tight">ECommerce</h2>
+        <p class="text-xs text-slate-400">Admin Portal</p>
+      </div>
     </div>
 
-    <mat-divider></mat-divider>
-
     <!-- Navigation Links -->
-    <mat-nav-list>
-      <a mat-list-item
-         *ngFor="let link of navLinks"
+    <nav class="flex-1 overflow-y-auto py-6 px-4 space-y-1">
+      <a *ngFor="let link of navLinks"
          [routerLink]="link.route"
-         routerLinkActive="active-link"
+         routerLinkActive="bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 shadow-[0_0_15px_rgba(99,102,241,0.1)]"
          [routerLinkActiveOptions]="{ exact: link.route === '/dashboard' }"
-         class="nav-item">
-        <mat-icon matListItemIcon>{{ link.icon }}</mat-icon>
-        <span matListItemTitle>{{ link.label }}</span>
+         class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:text-white hover:bg-white/5 transition-all cursor-pointer group border border-transparent">
+        <mat-icon class="group-hover:scale-110 transition-transform">{{ link.icon }}</mat-icon>
+        <span class="font-medium">{{ link.label }}</span>
       </a>
-    </mat-nav-list>
-
-  </mat-sidenav>
+    </nav>
+  </aside>
 
   <!-- Main Content Area -->
-  <mat-sidenav-content class="main-content">
-
+  <main class="flex-1 flex flex-col relative z-10 h-full overflow-hidden">
+    
     <!-- Top Navbar -->
-    <mat-toolbar color="primary" class="top-toolbar">
-      <span class="toolbar-title">ECommerce Admin</span>
+    <header class="h-20 flex-shrink-0 flex items-center justify-between px-8 bg-slate-900/40 backdrop-blur-md border-b border-white/10 shadow-sm">
+      <div class="flex items-center gap-4">
+        <h1 class="text-xl font-semibold text-white">Dashboard</h1>
+      </div>
       
-      <button mat-button (click)="testApiCall()" style="margin-left: 20px; border: 1px solid white;">
-        <mat-icon>api</mat-icon> Test API (Verify Step 7)
-      </button>
-
-      <span class="toolbar-spacer"></span>
-
-      <!-- User info + logout -->
-      <span class="user-email">{{ userEmail }}</span>
-      <span class="user-role-badge">{{ userRole }}</span>
-      <button mat-icon-button [matMenuTriggerFor]="userMenu" matTooltip="Account options" id="user-menu-btn">
-        <mat-icon>account_circle</mat-icon>
-      </button>
-      <mat-menu #userMenu="matMenu">
-        <button mat-menu-item (click)="logout()" id="logout-btn">
-          <mat-icon>logout</mat-icon>
-          <span>Logout</span>
+      <div class="flex items-center gap-6">
+        <button (click)="testApiCall()" class="px-4 py-2 rounded-full bg-white/5 border border-white/10 text-sm font-medium hover:bg-white/10 transition-colors flex items-center gap-2">
+          <mat-icon style="font-size: 18px; width: 18px; height: 18px;">api</mat-icon> Test API
         </button>
-      </mat-menu>
-    </mat-toolbar>
 
-    <!-- Page Content — Epic 5 screens will render here -->
-    <div class="content-wrapper">
+        <div class="h-6 w-px bg-white/10"></div>
+
+        <!-- User info -->
+        <div class="flex items-center gap-3">
+          <div class="text-right">
+            <p class="text-sm font-medium text-white">{{ userEmail }}</p>
+            <p class="text-xs text-indigo-400">{{ userRole }}</p>
+          </div>
+          <button [matMenuTriggerFor]="userMenu" class="w-10 h-10 rounded-full bg-slate-800 border border-white/10 flex items-center justify-center hover:ring-2 ring-indigo-500/50 transition-all cursor-pointer overflow-hidden">
+            <mat-icon class="text-slate-400">person</mat-icon>
+          </button>
+        </div>
+        
+        <mat-menu #userMenu="matMenu" class="dark-menu">
+          <button mat-menu-item (click)="logout()">
+            <mat-icon>logout</mat-icon>
+            <span>Logout</span>
+          </button>
+        </mat-menu>
+      </div>
+    </header>
+
+    <!-- Page Content -->
+    <div class="flex-1 overflow-y-auto p-8 relative">
       <router-outlet></router-outlet>
     </div>
 
-  </mat-sidenav-content>
-
-</mat-sidenav-container>
+  </main>
+</div>
