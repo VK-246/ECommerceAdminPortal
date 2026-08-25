@@ -1,0 +1,87 @@
+name: Build and Deploy to Azure Container Apps
+
+on:
+  push:
+    branches:
+      - main
+
+env:
+  REGISTRY_LOGIN_SERVER: ${{ secrets.REGISTRY_LOGIN_SERVER }}
+  RESOURCE_GROUP: rg-ecommerce-prod
+  CONTAINER_APP_ENV: cae-ecommerce-prod
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Docker Login
+        uses: azure/docker-login@v1
+        with:
+          login-server: ${{ secrets.REGISTRY_LOGIN_SERVER }}
+          username: ${{ secrets.REGISTRY_USERNAME }}
+          password: ${{ secrets.REGISTRY_PASSWORD }}
+
+      - name: Build & Push API Image
+        run: |
+          docker build -t $REGISTRY_LOGIN_SERVER/ecommerce-api:${{ github.sha }} -f backend/Dockerfile .
+          docker push $REGISTRY_LOGIN_SERVER/ecommerce-api:${{ github.sha }}
+
+      - name: Build & Push Frontend Image
+        run: |
+          docker build -t $REGISTRY_LOGIN_SERVER/ecommerce-web:${{ github.sha }} -f frontend/Dockerfile .
+          docker push $REGISTRY_LOGIN_SERVER/ecommerce-web:${{ github.sha }}
+
+  database-migration:
+    needs: build-and-push
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Install EF Core CLI
+        run: dotnet tool install --global dotnet-ef
+
+      - name: Run Database Migrations
+        env:
+          ConnectionStrings__DefaultConnection: ${{ secrets.DB_CONNECTION_STRING }}
+        run: |
+          cd backend/ECommerce.Infrastructure
+          dotnet ef database update --startup-project ../ECommerce.Api
+
+  deploy-to-azure:
+    needs: database-migration
+    runs-on: ubuntu-latest
+    steps:
+      - name: Azure Login
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Deploy API to Container Apps
+        uses: azure/container-apps-deploy-action@v1
+        with:
+          resourceGroup: ${{ env.RESOURCE_GROUP }}
+          containerAppName: ca-ecommerce-api
+          containerAppEnvironment: ${{ env.CONTAINER_APP_ENV }}
+          imageToDeploy: ${{ env.REGISTRY_LOGIN_SERVER }}/ecommerce-api:${{ github.sha }}
+          environmentVariables: "ASPNETCORE_ENVIRONMENT=Production ConnectionStrings__DefaultConnection=${{ secrets.DB_CONNECTION_STRING }} Gemini__ApiKey=${{ secrets.GEMINI_API_KEY }}"
+          ingress: external
+          targetPort: 8080
+
+      - name: Deploy Web to Container Apps
+        uses: azure/container-apps-deploy-action@v1
+        with:
+          resourceGroup: ${{ env.RESOURCE_GROUP }}
+          containerAppName: ca-ecommerce-web
+          containerAppEnvironment: ${{ env.CONTAINER_APP_ENV }}
+          imageToDeploy: ${{ env.REGISTRY_LOGIN_SERVER }}/ecommerce-web:${{ github.sha }}
+          ingress: external
+          targetPort: 80

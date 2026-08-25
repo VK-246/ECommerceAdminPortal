@@ -40,6 +40,35 @@ services:
       postgres:
         condition: service_healthy
 
+  # .NET Core API
+  api:
+    build:
+      context: ../backend
+      dockerfile: Dockerfile
+    container_name: ecommerce-api
+    restart: unless-stopped
+    ports:
+      - "5000:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__DefaultConnection=Host=postgres;Port=5432;Database=${POSTGRES_DB:-ecommerce_admin};Username=${POSTGRES_USER:-postgres};Password=${POSTGRES_PASSWORD:-postgres}
+      - Gemini__ApiKey=${GEMINI_API_KEY}
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  # Angular Frontend
+  web:
+    build:
+      context: ../frontend
+      dockerfile: Dockerfile
+    container_name: ecommerce-web
+    restart: unless-stopped
+    ports:
+      - "4200:80"
+    depends_on:
+      - api
+
 volumes:
   pgdata:
     driver: local
