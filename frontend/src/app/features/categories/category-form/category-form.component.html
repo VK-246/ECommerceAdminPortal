@@ -1,0 +1,27 @@
+<h2 mat-dialog-title>{{ isEditMode ? 'Edit Category' : 'Add New Category' }}</h2>
+
+<mat-dialog-content>
+  <form [formGroup]="categoryForm" (ngSubmit)="onSubmit()" id="categoryForm">
+    
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Category Name</mat-label>
+      <input matInput formControlName="name" placeholder="e.g., Electronics">
+      <mat-error *ngIf="categoryForm.get('name')?.hasError('required')">
+        Name is required.
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Description</mat-label>
+      <textarea matInput formControlName="description" rows="3" placeholder="Optional description"></textarea>
+    </mat-form-field>
+
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button type="button" (click)="onCancel()" [disabled]="isSaving">Cancel</button>
+  <button mat-raised-button color="primary" type="submit" form="categoryForm" [disabled]="categoryForm.invalid || isSaving">
+    {{ isSaving ? 'Saving...' : 'Save' }}
+  </button>
+</mat-dialog-actions>

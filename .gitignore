@@ -1,0 +1,32 @@
+# --- Build Artifacts & Binaries ---
+bin/
+obj/
+node_modules/
+dist/
+build/
+
+# --- Environment & Secrets ---
+.env
+*.env
+docker/.env
+appsettings.Development.json
+appsettings.*.Local.json
+
+# --- Markdown & Internal Documentation ---
+*.md
+*.MD
+Responses/
+docs/
+
+# (Optional) Uncomment line below if you want to keep root README visible on GitHub:
+# !README.MD
+
+# --- IDE & OS Files ---
+.vs/
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# --- Dev & Custom Folders ---
+Dev/

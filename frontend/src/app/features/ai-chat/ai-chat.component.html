@@ -1,0 +1,30 @@
+<div class="chat-container">
+  <mat-card>
+    <mat-card-header>
+      <mat-icon mat-card-avatar color="accent" class="avatar-icon">smart_toy</mat-icon>
+      <mat-card-title>AI Marketing Assistant</mat-card-title>
+      <mat-card-subtitle>Ask Gemini for SEO advice, product taglines, or marketing strategies.</mat-card-subtitle>
+    </mat-card-header>
+
+    <mat-card-content class="chat-content">
+      <mat-form-field appearance="outline" class="full-width mt-16">
+        <mat-label>Ask me anything...</mat-label>
+        <textarea matInput [(ngModel)]="prompt" rows="3" placeholder="e.g. Write a promotional tweet for my new wireless mouse..."></textarea>
+      </mat-form-field>
+      
+      <div class="action-row">
+        <button mat-raised-button color="accent" (click)="askAi()" [disabled]="isLoading || !prompt.trim()">
+          <mat-icon>send</mat-icon> Ask AI
+        </button>
+      </div>
+
+      <div class="response-box" *ngIf="response || isLoading">
+        <mat-spinner *ngIf="isLoading" diameter="40"></mat-spinner>
+        <div class="response-text" *ngIf="response">
+          <strong>Gemini says:</strong>
+          <p>{{ response }}</p>
+        </div>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>

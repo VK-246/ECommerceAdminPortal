@@ -1,0 +1,184 @@
+<!-- =========================================
+     Product Form Dialog — Modern Variant UI
+     ========================================= -->
+
+<div class="dialog-header" mat-dialog-title>
+  <div class="dialog-title-icon">
+    <mat-icon>{{ isEditMode ? 'edit' : 'add_circle' }}</mat-icon>
+  </div>
+  <div>
+    <h2 class="dialog-title-text">{{ isEditMode ? 'Edit Product' : 'New Product' }}</h2>
+    <p class="dialog-title-sub">{{ isEditMode ? 'Update product details and variants' : 'Build a product with smart variants' }}</p>
+  </div>
+</div>
+
+<mat-dialog-content class="dialog-content">
+  <form [formGroup]="productForm" id="productForm">
+
+    <!-- ── SECTION 1: Core Details ───────────────────── -->
+    <div class="section-label">
+      <span class="section-badge">01</span>
+      <span>Core Details</span>
+    </div>
+
+    <div class="fields-row">
+      <mat-form-field appearance="outline" class="field-grow">
+        <mat-label>Product Name</mat-label>
+        <input matInput formControlName="name" placeholder="e.g., Premium Wireless Earbuds" autocomplete="off">
+        <mat-icon matSuffix class="field-icon">label</mat-icon>
+        <mat-error *ngIf="productForm.get('name')?.hasError('required')">Name is required.</mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="field-category">
+        <mat-label>Category</mat-label>
+        <mat-select formControlName="categoryId">
+          <mat-option *ngIf="isLoadingCategories" disabled>Loading...</mat-option>
+          <mat-option *ngFor="let cat of categories" [value]="cat.id">{{ cat.name }}</mat-option>
+        </mat-select>
+        <mat-icon matSuffix class="field-icon">category</mat-icon>
+        <mat-error *ngIf="productForm.get('categoryId')?.hasError('required')">Category is required.</mat-error>
+      </mat-form-field>
+    </div>
+
+    <!-- AI Description -->
+    <div class="ai-field-wrapper">
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Product Description</mat-label>
+        <textarea matInput formControlName="description" rows="3"
+          placeholder="Enter a description or use AI to generate one..."></textarea>
+      </mat-form-field>
+      <button type="button" class="ai-generate-btn" (click)="generateAiDescription()" [disabled]="isGeneratingAi">
+        <div class="ai-btn-inner">
+          <mat-icon *ngIf="!isGeneratingAi">auto_awesome</mat-icon>
+          <mat-spinner *ngIf="isGeneratingAi" diameter="16" class="inline-spinner"></mat-spinner>
+          <span>{{ isGeneratingAi ? 'Generating...' : 'AI Generate' }}</span>
+        </div>
+      </button>
+    </div>
+
+    <!-- ── SECTION 2: Product Options ───────────────── -->
+    <div class="section-label">
+      <span class="section-badge">02</span>
+      <span>Product Options</span>
+      <span class="section-hint">e.g., Color, Size</span>
+    </div>
+
+    <div class="options-container" formArrayName="options">
+      <div *ngFor="let opt of optionsArray.controls; let i = index"
+           class="option-card" [formGroupName]="i">
+
+        <div class="option-header">
+          <mat-form-field appearance="outline" class="attribute-select">
+            <mat-label>Attribute</mat-label>
+            <mat-select formControlName="attributeId">
+              <mat-option *ngIf="isLoadingAttributes" disabled>Loading...</mat-option>
+              <mat-option *ngFor="let attr of attributes" [value]="attr.id">{{ attr.name }}</mat-option>
+            </mat-select>
+          </mat-form-field>
+          <button type="button" class="remove-option-btn" (click)="removeOption(i)" matTooltip="Remove option">
+            <mat-icon>close</mat-icon>
+          </button>
+        </div>
+
+        <div class="chips-label">Values <span class="chips-hint">Press Enter or comma to add</span></div>
+        <mat-chip-grid #chipGrid class="chip-grid">
+          <mat-chip-row
+            *ngFor="let val of getOptionValues(i)"
+            [removable]="true"
+            (removed)="removeChip(i, val)"
+            class="value-chip">
+            {{ val }}
+            <mat-icon matChipRemove>cancel</mat-icon>
+          </mat-chip-row>
+          <input
+            [matChipInputFor]="chipGrid"
+            [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+            [matChipInputAddOnBlur]="true"
+            (matChipInputTokenEnd)="addChip($event, i)"
+            placeholder="Add value..."
+            class="chip-input">
+        </mat-chip-grid>
+      </div>
+
+      <!-- Empty state -->
+      <div class="options-empty" *ngIf="optionsArray.length === 0">
+        <mat-icon>tune</mat-icon>
+        <p>No options added. Add Color, Size, or any other attribute.</p>
+      </div>
+    </div>
+
+    <div class="options-actions">
+      <button type="button" class="add-option-btn" (click)="addOption()">
+        <mat-icon>add</mat-icon>
+        Add Option
+      </button>
+
+      <button type="button" class="generate-btn"
+              [disabled]="optionsArray.length === 0"
+              (click)="generateVariants()">
+        <mat-icon>auto_fix_high</mat-icon>
+        Generate Variants
+      </button>
+    </div>
+
+    <!-- ── SECTION 3: Variant Grid ───────────────────── -->
+    <ng-container *ngIf="variantsGenerated && variantRows.length > 0">
+      <div class="section-label">
+        <span class="section-badge">03</span>
+        <span>Variant Configuration</span>
+        <span class="variant-count-badge">{{ variantRows.length }} variants</span>
+      </div>
+
+      <div class="variant-grid-wrapper">
+        <table class="variant-table">
+          <thead>
+            <tr>
+              <th class="col-variant">Variant</th>
+              <th class="col-sku">SKU</th>
+              <th class="col-price">Price (₹)</th>
+              <th class="col-stock">Stock</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let row of variantRows; let i = index" class="variant-row">
+              <td class="col-variant">
+                <div class="variant-label-pills">
+                  <span *ngFor="let part of row.label.split(' / ')" class="variant-pill">{{ part }}</span>
+                </div>
+              </td>
+              <td class="col-sku">
+                <input type="text" class="variant-input" [(ngModel)]="row.sku"
+                       [ngModelOptions]="{standalone: true}"
+                       placeholder="e.g., SKU-RED-M">
+              </td>
+              <td class="col-price">
+                <input type="number" class="variant-input" [(ngModel)]="row.price"
+                       [ngModelOptions]="{standalone: true}"
+                       min="0" step="0.01" placeholder="0.00">
+              </td>
+              <td class="col-stock">
+                <input type="number" class="variant-input" [(ngModel)]="row.stockQuantity"
+                       [ngModelOptions]="{standalone: true}"
+                       min="0" step="1" placeholder="0">
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </ng-container>
+
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions class="dialog-actions" align="end">
+  <button type="button" class="cancel-btn" (click)="onCancel()" [disabled]="isSaving">
+    Cancel
+  </button>
+  <button type="submit" form="productForm" class="save-btn"
+          [disabled]="productForm.invalid || isSaving || !variantsGenerated"
+          (click)="onSubmit()">
+    <mat-spinner *ngIf="isSaving" diameter="18" class="btn-spinner"></mat-spinner>
+    <mat-icon *ngIf="!isSaving">{{ isEditMode ? 'save' : 'add_circle' }}</mat-icon>
+    {{ isSaving ? 'Saving...' : (isEditMode ? 'Update Product' : 'Create Product') }}
+  </button>
+</mat-dialog-actions>

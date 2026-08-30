@@ -1,0 +1,83 @@
+<div class="min-h-screen flex items-center justify-center relative overflow-hidden bg-slate-950">
+  
+  <!-- Extremely faint geometric grid pattern -->
+  <div class="absolute inset-0 z-0 pointer-events-none opacity-[0.03]" style="background-image: linear-gradient(to right, #ffffff 1px, transparent 1px), linear-gradient(to bottom, #ffffff 1px, transparent 1px); background-size: 40px 40px;"></div>
+
+  <!-- Dynamic Glowing Cursor Follower -->
+  <div class="pointer-events-none fixed inset-0 z-0"
+       style="background: radial-gradient(800px circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(253, 224, 71, 0.18), transparent 40%)">
+  </div>
+
+  <!-- Subtle ambient background glow elements -->
+  <div class="absolute top-1/4 left-1/4 w-96 h-96 bg-indigo-600/20 rounded-full blur-[120px] pointer-events-none"></div>
+  <div class="absolute bottom-1/4 right-1/4 w-96 h-96 bg-emerald-600/10 rounded-full blur-[100px] pointer-events-none"></div>
+
+  <!-- Glassmorphic Card -->
+  <div class="w-full max-w-md mx-4 relative z-10 bg-slate-900/60 backdrop-blur-2xl border border-white/10 rounded-3xl p-10 shadow-[0_0_50px_-12px_rgba(0,0,0,0.8)]">
+    
+    <!-- Header -->
+    <div class="text-center mb-8">
+      <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-indigo-500/10 border border-indigo-500/20 mb-4 shadow-[0_0_20px_rgba(99,102,241,0.15)]">
+        <mat-icon class="text-indigo-400" style="font-size: 32px; width: 32px; height: 32px;">storefront</mat-icon>
+      </div>
+      <h1 class="text-3xl font-bold tracking-tight text-white mb-2">ECommerce Admin</h1>
+      <p class="text-slate-400 text-sm">Sign in to manage your empire</p>
+    </div>
+
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" novalidate class="space-y-5">
+
+      <!-- Email Field -->
+      <div>
+        <div class="relative group">
+          <mat-icon class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-indigo-400 transition-colors">email</mat-icon>
+          <input 
+            type="email" 
+            formControlName="email" 
+            placeholder="admin@example.com" 
+            class="w-full bg-white/5 border border-white/10 rounded-full pl-12 pr-4 py-3.5 text-slate-200 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:bg-white/10 transition-all"
+            id="email-input"
+          >
+        </div>
+        <div class="min-h-[20px] mt-1 ml-4">
+          <span class="text-red-400 text-xs" *ngIf="email?.touched && email?.hasError('required')">Email is required.</span>
+          <span class="text-red-400 text-xs" *ngIf="email?.touched && email?.hasError('email')">Please enter a valid email.</span>
+        </div>
+      </div>
+
+      <!-- Password Field -->
+      <div>
+        <div class="relative group">
+          <mat-icon class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-indigo-400 transition-colors">lock</mat-icon>
+          <input 
+            [type]="hidePassword ? 'password' : 'text'" 
+            formControlName="password" 
+            placeholder="Password"
+            class="w-full bg-white/5 border border-white/10 rounded-full pl-12 pr-12 py-3.5 text-slate-200 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:bg-white/10 transition-all"
+            id="password-input"
+          >
+          <button 
+            type="button" 
+            (click)="hidePassword = !hidePassword"
+            class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white transition-colors focus:outline-none flex items-center justify-center">
+            <mat-icon style="font-size: 20px; width: 20px; height: 20px;">{{ hidePassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+          </button>
+        </div>
+        <div class="min-h-[20px] mt-1 ml-4">
+          <span class="text-red-400 text-xs" *ngIf="password?.touched && password?.hasError('required')">Password is required.</span>
+          <span class="text-red-400 text-xs" *ngIf="password?.touched && password?.hasError('minlength')">Password must be at least 6 characters.</span>
+        </div>
+      </div>
+
+      <!-- Submit Button -->
+      <button
+        type="submit"
+        [disabled]="isLoading || loginForm.invalid"
+        class="w-full mt-2 bg-indigo-600 hover:bg-indigo-500 disabled:bg-indigo-600/50 disabled:text-white/50 disabled:cursor-not-allowed hover:scale-[1.02] active:scale-[0.98] text-white rounded-full py-3.5 font-medium transition-all shadow-[0_0_20px_rgba(99,102,241,0.3)] hover:shadow-[0_0_25px_rgba(99,102,241,0.5)] flex justify-center items-center gap-2"
+        id="login-button">
+        <mat-spinner *ngIf="isLoading" diameter="20" class="btn-spinner"></mat-spinner>
+        <span *ngIf="!isLoading">Sign In</span>
+      </button>
+
+    </form>
+  </div>
+</div>
