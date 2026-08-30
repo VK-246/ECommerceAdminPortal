@@ -17,5 +17,11 @@ public interface IAppDbContext
     DbSet<Category> Categories { get; }
     DbSet<Product> Products { get; }
 
+    // Variant-related DbSets
+    DbSet<Domain.Entities.Attribute> Attributes { get; }
+    DbSet<ProductOption> ProductOptions { get; }
+    DbSet<ProductOptionValue> ProductOptionValues { get; }
+    DbSet<ProductVariant> ProductVariants { get; }
+
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }

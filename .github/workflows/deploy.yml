@@ -1,87 +1,71 @@
-name: Build and Deploy to Azure Container Apps
+name: CI/CD — Test & Deploy to Render
 
+# Trigger: runs on every push to main branch
 on:
   push:
     branches:
       - main
 
-env:
-  REGISTRY_LOGIN_SERVER: ${{ secrets.REGISTRY_LOGIN_SERVER }}
-  RESOURCE_GROUP: rg-ecommerce-prod
-  CONTAINER_APP_ENV: cae-ecommerce-prod
-
 jobs:
-  build-and-push:
+  # -------------------------------------------------------
+  # JOB 1: Automated QA Gate
+  # Restores packages and runs all xUnit tests.
+  # The deploy job will NOT run if any test fails.
+  # -------------------------------------------------------
+  test:
+    name: Run .NET Unit Tests
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-      - name: Docker Login
-        uses: azure/docker-login@v1
-        with:
-          login-server: ${{ secrets.REGISTRY_LOGIN_SERVER }}
-          username: ${{ secrets.REGISTRY_USERNAME }}
-          password: ${{ secrets.REGISTRY_PASSWORD }}
-
-      - name: Build & Push API Image
-        run: |
-          docker build -t $REGISTRY_LOGIN_SERVER/ecommerce-api:${{ github.sha }} -f backend/Dockerfile .
-          docker push $REGISTRY_LOGIN_SERVER/ecommerce-api:${{ github.sha }}
-
-      - name: Build & Push Frontend Image
-        run: |
-          docker build -t $REGISTRY_LOGIN_SERVER/ecommerce-web:${{ github.sha }} -f frontend/Dockerfile .
-          docker push $REGISTRY_LOGIN_SERVER/ecommerce-web:${{ github.sha }}
-
-  database-migration:
-    needs: build-and-push
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v3
-
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v3
+      - name: Setup .NET 10
+        uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '10.0.x'
 
-      - name: Install EF Core CLI
-        run: dotnet tool install --global dotnet-ef
+      - name: Restore dependencies
+        run: dotnet restore backend/ECommerce.slnx
 
-      - name: Run Database Migrations
-        env:
-          ConnectionStrings__DefaultConnection: ${{ secrets.DB_CONNECTION_STRING }}
-        run: |
-          cd backend/ECommerce.Infrastructure
-          dotnet ef database update --startup-project ../ECommerce.Api
+      - name: Build solution
+        run: dotnet build backend/ECommerce.slnx --no-restore --configuration Release
 
-  deploy-to-azure:
-    needs: database-migration
+      - name: Run xUnit tests
+        run: dotnet test backend/ECommerce.slnx --no-build --configuration Release --verbosity normal
+
+  # -------------------------------------------------------
+  # JOB 2: Deploy to Render
+  # Pings Render's deploy hook URLs to trigger a redeploy.
+  # Render pulls the latest code from GitHub, rebuilds the
+  # Docker image, and swaps the container with zero downtime.
+  #
+  # Required GitHub Secrets (Settings → Secrets → Actions):
+  #   RENDER_API_DEPLOY_HOOK_URL      ← Render API service: Settings → Deploy Hook
+  #   RENDER_FRONTEND_DEPLOY_HOOK_URL ← Render Frontend:   Settings → Deploy Hook
+  # -------------------------------------------------------
+  deploy:
+    name: Deploy to Render.com
     runs-on: ubuntu-latest
+    needs: test  # Only runs if the test job passes ✅
+
     steps:
-      - name: Azure Login
-        uses: azure/login@v1
-        with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
+      - name: Deploy Backend API
+        run: |
+          echo "Triggering Render deploy for Backend API..."
+          curl --silent --show-error --fail \
+            "${{ secrets.RENDER_API_DEPLOY_HOOK_URL }}"
+          echo "Backend API deploy triggered."
 
-      - name: Deploy API to Container Apps
-        uses: azure/container-apps-deploy-action@v1
-        with:
-          resourceGroup: ${{ env.RESOURCE_GROUP }}
-          containerAppName: ca-ecommerce-api
-          containerAppEnvironment: ${{ env.CONTAINER_APP_ENV }}
-          imageToDeploy: ${{ env.REGISTRY_LOGIN_SERVER }}/ecommerce-api:${{ github.sha }}
-          environmentVariables: "ASPNETCORE_ENVIRONMENT=Production ConnectionStrings__DefaultConnection=${{ secrets.DB_CONNECTION_STRING }} Gemini__ApiKey=${{ secrets.GEMINI_API_KEY }}"
-          ingress: external
-          targetPort: 8080
+      - name: Deploy Frontend Static Site
+        run: |
+          echo "Triggering Render deploy for Frontend..."
+          curl --silent --show-error --fail \
+            "${{ secrets.RENDER_FRONTEND_DEPLOY_HOOK_URL }}"
+          echo "Frontend deploy triggered."
 
-      - name: Deploy Web to Container Apps
-        uses: azure/container-apps-deploy-action@v1
-        with:
-          resourceGroup: ${{ env.RESOURCE_GROUP }}
-          containerAppName: ca-ecommerce-web
-          containerAppEnvironment: ${{ env.CONTAINER_APP_ENV }}
-          imageToDeploy: ${{ env.REGISTRY_LOGIN_SERVER }}/ecommerce-web:${{ github.sha }}
-          ingress: external
-          targetPort: 80
+      - name: Deployment Summary
+        run: |
+          echo "Deployment triggered successfully!"
+          echo "  API Health:  https://api.vinayak-portfolio.dev/api/health"
+          echo "  Frontend:    https://vinayak-portfolio.dev"

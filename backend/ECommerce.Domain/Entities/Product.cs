@@ -1,7 +1,9 @@
 namespace ECommerce.Domain.Entities;
 
 /// <summary>
-/// Represents a product in the e-commerce catalog.
+/// Represents a product in the e-commerce catalog (the Aggregate Root).
+/// A Product is a catalog item — it does NOT hold price or stock directly.
+/// Price, SKU, and StockQuantity live on ProductVariant (the actual sellable unit).
 /// Products belong to a Category and are linked to the User who created them (audit trail).
 /// The AiMetadata field stores AI-generated content as PostgreSQL JSONB.
 /// </summary>
@@ -16,16 +18,6 @@ public class Product
     /// Product name (e.g., "Wireless Headphones").
     /// </summary>
     public string Name { get; set; } = string.Empty;
-
-    /// <summary>
-    /// Product price — stored as decimal with precision (18,2) for currency accuracy.
-    /// </summary>
-    public decimal Price { get; set; }
-
-    /// <summary>
-    /// Available stock quantity. Defaults to 0.
-    /// </summary>
-    public int StockQuantity { get; set; }
 
     /// <summary>
     /// Product description — can be AI-generated or manually entered.
@@ -67,4 +59,17 @@ public class Product
     /// The user who created this product (audit trail).
     /// </summary>
     public User CreatedBy { get; set; } = null!;
+
+    /// <summary>
+    /// The options defined for this product (e.g., "Color", "Size").
+    /// Each option holds the set of values an admin has configured.
+    /// </summary>
+    public ICollection<ProductOption> Options { get; set; } = new List<ProductOption>();
+
+    /// <summary>
+    /// The concrete sellable units of this product.
+    /// Each variant is a unique combination of option values with its own SKU, price, and stock.
+    /// A product must have at least one variant (even simple products with no options).
+    /// </summary>
+    public ICollection<ProductVariant> Variants { get; set; } = new List<ProductVariant>();
 }

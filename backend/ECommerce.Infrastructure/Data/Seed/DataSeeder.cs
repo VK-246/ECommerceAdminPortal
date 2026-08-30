@@ -33,6 +33,7 @@ public static class DataSeeder
     {
         SeedUsers(modelBuilder);
         SeedCategories(modelBuilder);
+        SeedAttributes(modelBuilder);
     }
 
     /// <summary>
@@ -72,6 +73,22 @@ public static class DataSeeder
             new Category { Id = 3, Name = "Home & Kitchen", Description = "Household items, kitchen appliances, and decor" },
             new Category { Id = 4, Name = "Books", Description = "Physical and digital books across all genres" },
             new Category { Id = 5, Name = "Sports & Outdoors", Description = "Sports equipment, fitness gear, and outdoor supplies" }
+        );
+    }
+
+    /// <summary>
+    /// Seeds 5 common global attributes used to define product options.
+    /// These are the building blocks for product variant configuration.
+    /// Example: "Color" attribute → used by T-Shirt, Sneakers, Phone Case products.
+    /// </summary>
+    private static void SeedAttributes(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<Domain.Entities.Attribute>().HasData(
+            new Domain.Entities.Attribute { Id = 1, Name = "Color",    Description = "Visual color of the product" },
+            new Domain.Entities.Attribute { Id = 2, Name = "Size",     Description = "Physical size (e.g., S, M, L, XL or numeric)" },
+            new Domain.Entities.Attribute { Id = 3, Name = "Storage",  Description = "Storage capacity (e.g., 128GB, 256GB, 512GB)" },
+            new Domain.Entities.Attribute { Id = 4, Name = "Material", Description = "Primary material composition" },
+            new Domain.Entities.Attribute { Id = 5, Name = "Weight",   Description = "Product weight (e.g., Lightweight, Standard, Heavy)" }
         );
     }
 }

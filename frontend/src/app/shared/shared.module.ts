@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ReactiveFormsModule } from '@angular/forms';
+import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 
 // Angular Material Modules — imported here once and re-exported
 // so any feature module that imports SharedModule gets all of these for free.
@@ -56,11 +56,13 @@ const MATERIAL_MODULES = [
 @NgModule({
   imports: [
     CommonModule,
+    FormsModule,
     ReactiveFormsModule,
     ...MATERIAL_MODULES
   ],
   exports: [
     CommonModule,
+    FormsModule,
     ReactiveFormsModule,
     ...MATERIAL_MODULES
   ],

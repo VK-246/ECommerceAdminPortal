@@ -15,7 +15,7 @@ import { ConfirmDialogComponent } from '../../../shared/components/confirm-dialo
   styleUrls: ['./product-list.component.scss']
 })
 export class ProductListComponent implements OnInit {
-  displayedColumns: string[] = ['id', 'name', 'price', 'stockQuantity', 'category', 'actions'];
+  displayedColumns: string[] = ['id', 'name', 'priceRange', 'totalStock', 'category', 'actions'];
   dataSource = new MatTableDataSource<Product>();
   isLoading = true;
 
@@ -49,7 +49,8 @@ export class ProductListComponent implements OnInit {
 
   openForm(product?: Product): void {
     const dialogRef = this.dialog.open(ProductFormComponent, {
-      width: '500px',
+      width: '720px',
+      maxWidth: '95vw',
       data: product
     });
 

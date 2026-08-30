@@ -11,6 +11,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
 
+
 // -------------------------------------------------------
 // Program.cs — API Entry Point
 // -------------------------------------------------------
@@ -56,11 +57,18 @@ builder.Services.AddScoped<IPasswordHasher, BcryptPasswordHasher>();
 builder.Services.AddHttpClient<IAiService, GeminiAiService>();
 
 // --- CORS ---
+// Reads allowed origins from the CORS_ALLOWED_ORIGINS environment variable.
+// In local dev this falls back to localhost:4200.
+// In production (Render), set: CORS_ALLOWED_ORIGINS=https://vinayak-portfolio.dev
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AngularApp", policy =>
     {
-        policy.WithOrigins("http://localhost:4200") // Explicitly allow Angular dev server
+        var allowedOrigins = (builder.Configuration["CORS_ALLOWED_ORIGINS"]
+            ?? "http://localhost:4200")
+            .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+
+        policy.WithOrigins(allowedOrigins)
               .AllowAnyHeader()
               .AllowAnyMethod()
               .AllowCredentials(); // Required for cookies to be sent cross-origin
@@ -131,6 +139,18 @@ builder.Services.AddSwaggerGen(c =>
         In = ParameterLocation.Header,
         Description = "Paste your JWT token here. Swagger will automatically prepend 'Bearer '."
     });
+
+    // THIS IS THE MISSING PIECE:
+    // Tells Swagger to actually ATTACH the Bearer token to every request
+    // once authorized. Without this, the lock icon appears but the token
+    // is never sent in the Authorization header.
+    //
+    // Note: OpenApiReference was REMOVED in Swashbuckle v10 / Microsoft.OpenApi v2.
+    // The new API uses OpenApiSecuritySchemeReference with a document delegate.
+    c.AddSecurityRequirement(document => new OpenApiSecurityRequirement
+    {
+        [new OpenApiSecuritySchemeReference("Bearer", document)] = new List<string>()
+    });
 });
 
 
@@ -139,6 +159,18 @@ builder.Services.AddSwaggerGen(c =>
 // =======================================================
 
 var app = builder.Build();
+
+// =======================================================
+// AUTO MIGRATION — runs pending EF Core migrations on startup.
+// This is required for Render (PaaS) deployments where we
+// cannot manually run `dotnet ef database update`.
+// Safe to run on every startup — EF Core skips already-applied migrations.
+// =======================================================
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    db.Database.Migrate();
+}
 
 // =======================================================
 // SECTION 3: HTTP Pipeline Configuration (Middleware Order)

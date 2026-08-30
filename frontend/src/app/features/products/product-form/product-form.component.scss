@@ -1,32 +1,477 @@
-.full-width {
-  width: 100%;
-  margin-bottom: 8px;
-}
+// =====================================================
+// Product Form — Modern Glassmorphism Dialog Styles
+// =====================================================
 
-.row {
+// ─── Dialog Header ───────────────────────────────────
+.dialog-header {
   display: flex;
+  align-items: center;
   gap: 16px;
-  width: 100%;
+  padding: 20px 24px 8px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+  margin: 0 -24px;
 }
 
-.half-width {
-  flex: 1;
-  margin-bottom: 8px;
+.dialog-title-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
+
+  mat-icon { color: #fff; font-size: 22px; width: 22px; height: 22px; }
 }
 
-mat-dialog-content {
-  padding-top: 16px !important;
+.dialog-title-text {
+  font-size: 18px;
+  font-weight: 700;
+  color: #fff;
+  margin: 0;
+  letter-spacing: -0.3px;
 }
 
-.ai-description-container {
+.dialog-title-sub {
+  font-size: 12px;
+  color: rgba(255,255,255,0.4);
+  margin: 2px 0 0;
+}
+
+// ─── Dialog Content ──────────────────────────────────
+.dialog-content {
+  padding: 20px 24px !important;
+  max-height: 72vh !important;
+  overflow-y: auto !important;
+  background: transparent;
+
+  &::-webkit-scrollbar { width: 4px; }
+  &::-webkit-scrollbar-track { background: transparent; }
+  &::-webkit-scrollbar-thumb {
+    background: rgba(255,255,255,0.12);
+    border-radius: 4px;
+  }
+}
+
+// ─── Section Labels ──────────────────────────────────
+.section-label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 20px 0 12px;
+  font-size: 13px;
+  font-weight: 600;
+  color: rgba(255,255,255,0.7);
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+
+  &:first-child { margin-top: 0; }
+}
+
+.section-badge {
+  width: 22px;
+  height: 22px;
+  border-radius: 6px;
+  background: rgba(99, 102, 241, 0.25);
+  border: 1px solid rgba(99, 102, 241, 0.4);
+  color: #818cf8;
+  font-size: 11px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.section-hint {
+  font-size: 11px;
+  font-weight: 400;
+  color: rgba(255,255,255,0.3);
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+.variant-count-badge {
+  margin-left: auto;
+  padding: 2px 10px;
+  border-radius: 20px;
+  background: rgba(16, 185, 129, 0.15);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  color: #34d399;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+// ─── Form Fields ─────────────────────────────────────
+.full-width { width: 100%; }
+
+.fields-row {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.field-grow { flex: 1; }
+
+.field-category { width: 200px; flex-shrink: 0; }
+
+.field-icon {
+  color: rgba(255,255,255,0.3) !important;
+  font-size: 18px !important;
+}
+
+// ─── AI Description ──────────────────────────────────
+.ai-field-wrapper {
   position: relative;
   width: 100%;
 }
 
-.ai-btn {
+.ai-generate-btn {
   position: absolute;
-  bottom: 24px;
-  right: 12px;
-  background-color: white;
+  bottom: 22px;
+  right: 10px;
+  background: linear-gradient(135deg, rgba(99,102,241,0.2), rgba(139,92,246,0.2));
+  border: 1px solid rgba(99,102,241,0.4);
   border-radius: 20px;
+  padding: 5px 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: #a5b4fc;
+
+  &:hover:not(:disabled) {
+    background: linear-gradient(135deg, rgba(99,102,241,0.35), rgba(139,92,246,0.35));
+    border-color: rgba(99,102,241,0.6);
+    color: #c4b5fd;
+  }
+
+  &:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  .ai-btn-inner {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    font-weight: 600;
+
+    mat-icon { font-size: 15px; width: 15px; height: 15px; }
+  }
+}
+
+.inline-spinner {
+  ::ng-deep circle { stroke: #a5b4fc; }
+}
+
+// ─── Options Builder ─────────────────────────────────
+.options-container {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.option-card {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 14px;
+  padding: 14px 16px;
+  transition: border-color 0.2s ease;
+
+  &:hover { border-color: rgba(99,102,241,0.3); }
+}
+
+.option-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.attribute-select {
+  flex: 1;
+  margin: 0;
+}
+
+.remove-option-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  background: rgba(239,68,68,0.1);
+  border: 1px solid rgba(239,68,68,0.2);
+  color: #f87171;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 8px;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: rgba(239,68,68,0.2);
+    border-color: rgba(239,68,68,0.4);
+  }
+
+  mat-icon { font-size: 18px; width: 18px; height: 18px; }
+}
+
+.chips-label {
+  font-size: 12px;
+  color: rgba(255,255,255,0.5);
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.chips-hint {
+  font-size: 11px;
+  color: rgba(255,255,255,0.25);
+}
+
+.chip-grid {
+  min-height: 42px;
+  padding: 6px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 10px;
+}
+
+::ng-deep .value-chip {
+  background: rgba(99,102,241,0.2) !important;
+  color: #a5b4fc !important;
+  border: 1px solid rgba(99,102,241,0.35) !important;
+  font-size: 12px !important;
+  height: 26px !important;
+  border-radius: 6px !important;
+
+  .mat-mdc-chip-action-label { color: #a5b4fc !important; }
+  mat-icon { color: rgba(165,180,252,0.6) !important; font-size: 14px !important; }
+}
+
+.chip-input {
+  background: transparent;
+  border: none;
+  outline: none;
+  color: rgba(255,255,255,0.7);
+  font-size: 13px;
+  padding: 4px 8px;
+  min-width: 120px;
+
+  &::placeholder { color: rgba(255,255,255,0.25); }
+}
+
+.options-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 24px;
+  background: rgba(255,255,255,0.02);
+  border: 1px dashed rgba(255,255,255,0.1);
+  border-radius: 14px;
+  color: rgba(255,255,255,0.3);
+  text-align: center;
+
+  mat-icon { font-size: 32px; width: 32px; height: 32px; opacity: 0.4; }
+  p { font-size: 13px; margin: 0; }
+}
+
+// ─── Option/Generate Buttons ─────────────────────────
+.options-actions {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 4px;
+}
+
+.add-option-btn,
+.generate-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 18px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: 1px solid;
+
+  mat-icon { font-size: 18px; width: 18px; height: 18px; }
+}
+
+.add-option-btn {
+  background: rgba(255,255,255,0.04);
+  border-color: rgba(255,255,255,0.12);
+  color: rgba(255,255,255,0.6);
+
+  &:hover {
+    background: rgba(255,255,255,0.08);
+    border-color: rgba(255,255,255,0.2);
+    color: #fff;
+  }
+}
+
+.generate-btn {
+  background: linear-gradient(135deg, rgba(16,185,129,0.15), rgba(5,150,105,0.15));
+  border-color: rgba(16,185,129,0.35);
+  color: #34d399;
+  margin-left: auto;
+
+  &:hover:not(:disabled) {
+    background: linear-gradient(135deg, rgba(16,185,129,0.25), rgba(5,150,105,0.25));
+    border-color: rgba(16,185,129,0.55);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 14px rgba(16,185,129,0.2);
+  }
+
+  &:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+}
+
+// ─── Variant Grid ────────────────────────────────────
+.variant-grid-wrapper {
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 14px;
+  overflow: hidden;
+  background: rgba(255,255,255,0.02);
+}
+
+.variant-table {
+  width: 100%;
+  border-collapse: collapse;
+
+  thead tr {
+    background: rgba(255,255,255,0.04);
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+  }
+
+  th {
+    padding: 10px 14px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    color: rgba(255,255,255,0.4);
+    text-align: left;
+  }
+
+  .variant-row {
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    transition: background 0.15s ease;
+
+    &:last-child { border-bottom: none; }
+    &:hover { background: rgba(255,255,255,0.025); }
+  }
+
+  td { padding: 10px 14px; }
+
+  .col-sku   { width: 30%; }
+  .col-price { width: 18%; }
+  .col-stock { width: 16%; }
+}
+
+.variant-label-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.variant-pill {
+  padding: 2px 10px;
+  border-radius: 20px;
+  background: rgba(99,102,241,0.12);
+  border: 1px solid rgba(99,102,241,0.25);
+  color: #a5b4fc;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.variant-input {
+  width: 100%;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 8px;
+  padding: 7px 10px;
+  color: rgba(255,255,255,0.85);
+  font-size: 13px;
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  box-sizing: border-box;
+
+  &:focus {
+    border-color: rgba(99,102,241,0.5);
+    box-shadow: 0 0 0 3px rgba(99,102,241,0.12);
+    background: rgba(99,102,241,0.06);
+  }
+
+  &::placeholder { color: rgba(255,255,255,0.2); }
+
+  // Remove number input spinners
+  &[type=number]::-webkit-outer-spin-button,
+  &[type=number]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+  &[type=number] { -moz-appearance: textfield; }
+}
+
+// ─── Dialog Actions ──────────────────────────────────
+.dialog-actions {
+  padding: 12px 24px 16px !important;
+  border-top: 1px solid rgba(255,255,255,0.07);
+  gap: 10px;
+  margin: 0 -24px -24px;
+}
+
+.cancel-btn {
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 10px;
+  padding: 9px 20px;
+  color: rgba(255,255,255,0.5);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover:not(:disabled) {
+    background: rgba(255,255,255,0.08);
+    color: rgba(255,255,255,0.8);
+  }
+  &:disabled { opacity: 0.4; cursor: not-allowed; }
+}
+
+.save-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  border: none;
+  border-radius: 10px;
+  padding: 9px 22px;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 14px rgba(99,102,241,0.35);
+  letter-spacing: 0.2px;
+
+  mat-icon { font-size: 18px; width: 18px; height: 18px; }
+
+  &:hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(99,102,241,0.5);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+  }
+}
+
+.btn-spinner {
+  ::ng-deep circle { stroke: rgba(255,255,255,0.7); }
 }

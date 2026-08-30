@@ -20,5 +20,8 @@ RUN dotnet publish "ECommerce.Api.csproj" -c Release -o /app/publish /p:UseAppHo
 
 FROM base AS final
 WORKDIR /app
+# Explicitly bind to port 8080 on all interfaces.
+# Render's Docker Web Service routes external traffic to port 8080 by default.
+ENV ASPNETCORE_URLS=http://+:8080
 COPY --from=publish /app/publish .
 ENTRYPOINT ["dotnet", "ECommerce.Api.dll"]

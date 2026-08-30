@@ -23,16 +23,6 @@ public class ProductConfiguration : IEntityTypeConfiguration<Product>
             .IsRequired()
             .HasMaxLength(200);
 
-        // Price — decimal with precision (18,2) — standard for currency values
-        // 18 total digits, 2 decimal places (e.g., 9999999999999999.99)
-        builder.Property(p => p.Price)
-            .HasPrecision(18, 2);
-
-        // StockQuantity — required, defaults to 0
-        builder.Property(p => p.StockQuantity)
-            .IsRequired()
-            .HasDefaultValue(0);
-
         // Description — optional, stored as text (no length limit for AI-generated content)
         builder.Property(p => p.Description);
 
