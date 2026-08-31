@@ -15,8 +15,9 @@ appsettings.*.Local.json
 # --- Markdown & Internal Documentation ---
 *.md
 *.MD
-Responses/
-docs/
+/Responses/
+/docs/
+
 
 # (Optional) Uncomment line below if you want to keep root README visible on GitHub:
 # !README.MD
