@@ -50,12 +50,12 @@ public class AuthController : ControllerBase
         // GlobalExceptionMiddleware catches it and returns 401.
         var result = await _authService.LoginAsync(dto);
 
-        // --- NEW: Set HttpOnly Cookie ---
+        // --- Set HttpOnly Cookie (SameSite=None for cross-subdomain support) ---
         var cookieOptions = new CookieOptions
         {
             HttpOnly = true,
-            Secure = true, // Must be true in production, okay for localhost in modern browsers
-            SameSite = SameSiteMode.Strict,
+            Secure = true, // Required when SameSite=None
+            SameSite = SameSiteMode.None,
             Expires = result.ExpiresAt
         };
         Response.Cookies.Append("ecommerce_token", result.Token, cookieOptions);
@@ -71,7 +71,7 @@ public class AuthController : ControllerBase
         {
             HttpOnly = true,
             Secure = true,
-            SameSite = SameSiteMode.Strict
+            SameSite = SameSiteMode.None
         });
         return Ok(ApiResponse<string>.Ok(null, "Logout successful."));
     }

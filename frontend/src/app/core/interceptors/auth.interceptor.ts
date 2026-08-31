@@ -5,17 +5,27 @@ import { Observable } from 'rxjs';
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
 
+  constructor(private authService: AuthService) {}
+
   /**
    * Intercepts every outgoing HTTP request.
    *
-   * Appends `withCredentials: true` to tell the browser to automatically include
-   * the HttpOnly 'ecommerce_token' cookie with every API call.
+   * 1. Appends withCredentials: true (for HttpOnly cookies).
+   * 2. Attaches Authorization: Bearer <token> from localStorage (as a rock-solid backup).
    */
   intercept(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
-    // Clone the request and enable credentials (cookies)
+    const token = this.authService.getToken();
+
+    const headersConfig: { [name: string]: string } = {};
+    if (token) {
+      headersConfig['Authorization'] = `Bearer ${token}`;
+    }
+
     const authRequest = request.clone({
-      withCredentials: true
+      withCredentials: true,
+      setHeaders: headersConfig
     });
+
     return next.handle(authRequest);
   }
 }

@@ -7,8 +7,7 @@ import { environment } from '../../../environments/environment';
 
 import { ApiResponse } from '../models/api-response.model';
 
-// The keys we use to store UI state in the browser's localStorage
-// The JWT token itself is NOT stored here anymore; it is safely inside an HttpOnly cookie.
+const TOKEN_KEY = 'ecommerce_token';
 const EMAIL_KEY = 'ecommerce_email';
 const ROLE_KEY  = 'ecommerce_role';
 
@@ -23,13 +22,15 @@ export class AuthService {
 
   /**
    * Sends login credentials to the backend.
-   * On success, the backend sets an HttpOnly cookie containing the JWT.
-   * We only save the email and role into localStorage for UI display purposes.
+   * Saves token, email, and role into localStorage and cookies for seamless session persistence.
    */
   login(credentials: LoginRequest): Observable<ApiResponse<AuthResponse>> {
     return this.http.post<ApiResponse<AuthResponse>>(`${this.apiUrl}/login`, credentials).pipe(
       tap(response => {
-        if (response.success) {
+        if (response.success && response.data) {
+          if (response.data.token) {
+            localStorage.setItem(TOKEN_KEY, response.data.token);
+          }
           localStorage.setItem(EMAIL_KEY, response.data.email);
           localStorage.setItem(ROLE_KEY,  response.data.role);
         }
@@ -53,9 +54,17 @@ export class AuthService {
   }
 
   private clearSession(): void {
+    localStorage.removeItem(TOKEN_KEY);
     localStorage.removeItem(EMAIL_KEY);
     localStorage.removeItem(ROLE_KEY);
     this.router.navigate(['/login']);
+  }
+
+  /**
+   * Returns the JWT token from localStorage.
+   */
+  getToken(): string | null {
+    return localStorage.getItem(TOKEN_KEY);
   }
 
   /**
@@ -74,7 +83,6 @@ export class AuthService {
 
   /**
    * Returns true if a user email exists in localStorage.
-   * This is a simple UI check. Actual security is enforced by the backend verifying the HttpOnly cookie.
    */
   isLoggedIn(): boolean {
     return !!this.getUserEmail();
