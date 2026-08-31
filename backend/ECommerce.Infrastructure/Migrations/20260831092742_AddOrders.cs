@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
@@ -13,15 +13,7 @@ namespace ECommerce.Infrastructure.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DeleteData(
-                table: "Attributes",
-                keyColumn: "Id",
-                keyValue: 4);
 
-            migrationBuilder.DeleteData(
-                table: "Attributes",
-                keyColumn: "Id",
-                keyValue: 5);
 
             migrationBuilder.CreateTable(
                 name: "Orders",

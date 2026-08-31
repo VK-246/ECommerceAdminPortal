@@ -47,7 +47,9 @@ public static class DataSeeder
         modelBuilder.Entity<Domain.Entities.Attribute>().HasData(
             new Domain.Entities.Attribute { Id = 1, Name = "Color", Description = "Visual color" },
             new Domain.Entities.Attribute { Id = 2, Name = "Size", Description = "Physical size" },
-            new Domain.Entities.Attribute { Id = 3, Name = "Storage", Description = "Storage capacity" }
+            new Domain.Entities.Attribute { Id = 3, Name = "Storage", Description = "Storage capacity" },
+            new Domain.Entities.Attribute { Id = 4, Name = "Material", Description = "Build material" },
+            new Domain.Entities.Attribute { Id = 5, Name = "Weight", Description = "Physical weight" }
         );
     }
 
