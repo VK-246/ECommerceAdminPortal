@@ -8,11 +8,9 @@ on:
 
 jobs:
   # -------------------------------------------------------
-  # JOB 1: Automated QA Gate
-  # Restores packages and runs all xUnit tests.
-  # The deploy job will NOT run if any test fails.
+  # JOB 1A: Backend QA Gate (.NET Restore, Build, Tests)
   # -------------------------------------------------------
-  test:
+  test-backend:
     name: Run .NET Unit Tests
     runs-on: ubuntu-latest
 
@@ -35,19 +33,41 @@ jobs:
         run: dotnet test backend/ECommerce.slnx --no-build --configuration Release --verbosity normal
 
   # -------------------------------------------------------
+  # JOB 1B: Frontend QA Gate (Node, NPM Build & Type Check)
+  # Catches missing imports, TypeScript errors, and budget issues
+  # BEFORE triggering any deploy hooks.
+  # -------------------------------------------------------
+  test-frontend:
+    name: Build & Verify Frontend
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install dependencies
+        working-directory: frontend
+        run: npm ci
+
+      - name: Build Angular (Production Mode)
+        working-directory: frontend
+        run: npm run build -- --configuration=production
+
+  # -------------------------------------------------------
   # JOB 2: Deploy to Render
-  # Pings Render's deploy hook URLs to trigger a redeploy.
-  # Render pulls the latest code from GitHub, rebuilds the
-  # Docker image, and swaps the container with zero downtime.
-  #
-  # Required GitHub Secrets (Settings → Secrets → Actions):
-  #   RENDER_API_DEPLOY_HOOK_URL      ← Render API service: Settings → Deploy Hook
-  #   RENDER_FRONTEND_DEPLOY_HOOK_URL ← Render Frontend:   Settings → Deploy Hook
+  # Only triggers if BOTH backend and frontend QA gates pass.
   # -------------------------------------------------------
   deploy:
     name: Deploy to Render.com
     runs-on: ubuntu-latest
-    needs: test  # Only runs if the test job passes ✅
+    needs: [test-backend, test-frontend]  # Both must pass ✅
 
     steps:
       - name: Deploy Backend API
