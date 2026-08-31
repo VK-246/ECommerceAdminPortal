@@ -29,6 +29,10 @@ public class AppDbContext : DbContext, IAppDbContext
     public DbSet<ProductVariant> ProductVariants => Set<ProductVariant>();
     // VariantOptionValue is auto-discovered via the composite key config — no explicit DbSet needed
 
+    // Order-related DbSets
+    public DbSet<Order> Orders => Set<Order>();
+    public DbSet<OrderItem> OrderItems => Set<OrderItem>();
+
     /// <summary>
     /// Applies all IEntityTypeConfiguration classes from this assembly,
     /// then seeds the database with initial data.

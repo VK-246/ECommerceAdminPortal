@@ -14,9 +14,8 @@ export class DashboardLayoutComponent implements OnInit {
   userEmail: string | null = '';
   userRole: string | null = '';
 
-  // Navigation links in the sidebar — Epic 5 will add real routes here
   navLinks = [
-    { label: 'Dashboard',   icon: 'dashboard',   route: '/dashboard' },
+    { label: 'Dashboard',   icon: 'dashboard',   route: '/dashboard/overview' },
     { label: 'Categories',  icon: 'category',    route: '/dashboard/categories' },
     { label: 'Products',    icon: 'inventory_2', route: '/dashboard/products' },
     { label: 'AI Assistant', icon: 'smart_toy',  route: '/dashboard/ai-chat' }

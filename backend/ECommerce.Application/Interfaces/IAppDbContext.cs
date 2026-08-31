@@ -23,5 +23,9 @@ public interface IAppDbContext
     DbSet<ProductOptionValue> ProductOptionValues { get; }
     DbSet<ProductVariant> ProductVariants { get; }
 
+    // Order-related DbSets
+    DbSet<Order> Orders { get; }
+    DbSet<OrderItem> OrderItems { get; }
+
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }

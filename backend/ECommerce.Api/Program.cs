@@ -45,6 +45,7 @@ builder.Services.AddScoped<IAuthService, AuthService>();
 // Core Domain Services
 builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<IProductService, ProductService>();
+builder.Services.AddScoped<IDashboardService, DashboardService>();
 
 // --- Infrastructure Services ---
 // Register token generation. AuthService asks for ITokenService; DI injects TokenService.

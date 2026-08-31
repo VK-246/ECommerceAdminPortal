@@ -1,0 +1,125 @@
+<div class="p-6 max-w-7xl mx-auto space-y-6 animate-fade-in">
+  <!-- Header -->
+  <div>
+    <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Dashboard Overview</h1>
+    <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Here's what's happening with your store today.</p>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="flex justify-center items-center h-64">
+    <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
+  </div>
+
+  <!-- Content -->
+  <div *ngIf="!isLoading" class="space-y-6">
+    
+    <!-- KPI Cards (Row 1) -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <!-- Total Revenue -->
+      <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6 border border-gray-100 dark:border-gray-700 hover:shadow-md transition-shadow">
+        <div class="flex items-center">
+          <div class="p-3 rounded-full bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+          </div>
+          <div class="ml-4">
+            <h2 class="text-sm font-medium text-gray-500 dark:text-gray-400">Total Revenue</h2>
+            <p class="text-2xl font-bold text-gray-900 dark:text-white">{{ kpis?.totalRevenue | currency }}</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Total Orders -->
+      <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6 border border-gray-100 dark:border-gray-700 hover:shadow-md transition-shadow">
+        <div class="flex items-center">
+          <div class="p-3 rounded-full bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path></svg>
+          </div>
+          <div class="ml-4">
+            <h2 class="text-sm font-medium text-gray-500 dark:text-gray-400">Total Orders</h2>
+            <p class="text-2xl font-bold text-gray-900 dark:text-white">{{ kpis?.totalOrders }}</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Low Stock Alerts -->
+      <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6 border border-gray-100 dark:border-gray-700 hover:shadow-md transition-shadow">
+        <div class="flex items-center">
+          <div class="p-3 rounded-full bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+          </div>
+          <div class="ml-4">
+            <h2 class="text-sm font-medium text-gray-500 dark:text-gray-400">Low Stock Alerts</h2>
+            <p class="text-2xl font-bold text-gray-900 dark:text-white">{{ kpis?.lowStockAlerts }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Chart (Row 2) -->
+    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
+      <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">12-Month Revenue Trend</h2>
+      <div class="h-80">
+        <canvas baseChart 
+                [data]="barChartData" 
+                [options]="barChartOptions" 
+                [type]="'bar'">
+        </canvas>
+      </div>
+    </div>
+
+    <!-- Data Tables (Row 3) -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      
+      <!-- Best Sellers -->
+      <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
+        <div class="px-6 py-4 border-b border-gray-100 dark:border-gray-700 flex justify-between items-center bg-gray-50 dark:bg-gray-800/50">
+          <h2 class="text-sm font-semibold text-gray-900 dark:text-white">Top 5 Best Sellers</h2>
+          <span class="text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400 px-2 py-1 rounded-full">All Time</span>
+        </div>
+        <div class="divide-y divide-gray-100 dark:divide-gray-700">
+          <div *ngFor="let item of inventoryAlerts?.bestSellers; let i = index" class="p-4 flex items-center hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
+            <div class="w-8 h-8 rounded bg-gray-100 dark:bg-gray-700 flex items-center justify-center text-sm font-bold text-gray-500">
+              #{{i + 1}}
+            </div>
+            <div class="ml-4 flex-1">
+              <p class="text-sm font-medium text-gray-900 dark:text-white">{{item.productName}}</p>
+              <p class="text-xs text-gray-500">{{item.sku}}</p>
+            </div>
+            <div class="text-sm font-semibold text-gray-900 dark:text-white">
+              {{item.totalSold}} sold
+            </div>
+          </div>
+          <div *ngIf="inventoryAlerts?.bestSellers?.length === 0" class="p-8 text-center text-gray-500">
+            No sales data available yet.
+          </div>
+        </div>
+      </div>
+
+      <!-- Low Stock Alerts -->
+      <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
+        <div class="px-6 py-4 border-b border-gray-100 dark:border-gray-700 flex justify-between items-center bg-gray-50 dark:bg-gray-800/50">
+          <h2 class="text-sm font-semibold text-gray-900 dark:text-white">Low Stock Warning</h2>
+          <span class="text-xs font-medium bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400 px-2 py-1 rounded-full">< 10 items</span>
+        </div>
+        <div class="divide-y divide-gray-100 dark:divide-gray-700">
+          <div *ngFor="let item of inventoryAlerts?.lowStockVariants" class="p-4 flex items-center hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
+            <div class="flex-1">
+              <p class="text-sm font-medium text-gray-900 dark:text-white">{{item.productName}}</p>
+              <p class="text-xs text-gray-500">{{item.sku}}</p>
+            </div>
+            <div class="flex items-center">
+              <span class="inline-flex items-center justify-center px-2.5 py-1 text-xs font-bold rounded-full"
+                    [ngClass]="item.stock === 0 ? 'bg-red-100 text-red-800' : 'bg-yellow-100 text-yellow-800'">
+                {{item.stock}} left
+              </span>
+            </div>
+          </div>
+          <div *ngIf="inventoryAlerts?.lowStockVariants?.length === 0" class="p-8 text-center text-gray-500">
+            All variants are sufficiently stocked.
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>

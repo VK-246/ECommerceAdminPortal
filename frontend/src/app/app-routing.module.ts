@@ -21,7 +21,11 @@ const routes: Routes = [
     component: DashboardLayoutComponent,
     canActivate: [AuthGuard],
     children: [
-      { path: '', redirectTo: 'categories', pathMatch: 'full' },
+      { path: '', redirectTo: 'overview', pathMatch: 'full' },
+      { 
+        path: 'overview', 
+        loadChildren: () => import('./features/dashboard-overview/dashboard-overview.module').then(m => m.DashboardOverviewModule) 
+      },
       { 
         path: 'categories', 
         loadChildren: () => import('./features/categories/categories.module').then(m => m.CategoriesModule) 
